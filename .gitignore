@@ -5,5 +5,9 @@
 /.react-router/
 /build/
 
+# Environment variables
 .env
-.vscode
+
+# Cache directories
+.eslintcache
+.cache
