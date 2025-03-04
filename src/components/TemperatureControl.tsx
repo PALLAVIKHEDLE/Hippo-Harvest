@@ -1,14 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface Props {
-  facilityId: string;
   currentTemperature: number;
   targetTemperature: number;
-  onTemperatureChange: (id: string, temperature: number) => void;
+  onTemperatureChange: (temperature: number) => void;
 }
 
 export default function TemperatureControl({
-  facilityId,
   currentTemperature,
   targetTemperature,
   onTemperatureChange,
@@ -16,10 +14,29 @@ export default function TemperatureControl({
   const [isAdjusting, setIsAdjusting] = useState(false);
   const [tempValue, setTempValue] = useState(targetTemperature);
 
+  // Update tempValue when targetTemperature changes
+  useEffect(() => {
+    setTempValue(targetTemperature);
+  }, [targetTemperature]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onTemperatureChange(facilityId, tempValue);
+    onTemperatureChange(tempValue);
     setIsAdjusting(false);
+  };
+
+  // Temperature limits in Celsius
+  const MIN_TEMP = 15;
+  const MAX_TEMP = 40; // Increased maximum temperature to 40°C
+
+  const handleIncrement = () => {
+    const newTemp = Math.min(Math.round(tempValue + 1), MAX_TEMP);
+    setTempValue(newTemp);
+  };
+
+  const handleDecrement = () => {
+    const newTemp = Math.max(Math.round(tempValue - 1), MIN_TEMP);
+    setTempValue(newTemp);
   };
 
   return (
@@ -27,7 +44,10 @@ export default function TemperatureControl({
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-gray-800">Temperature Control</h3>
         <button
-          onClick={() => setIsAdjusting(!isAdjusting)}
+          onClick={() => {
+            setIsAdjusting(!isAdjusting);
+            setTempValue(targetTemperature); // Reset to current target when toggling
+          }}
           className="text-blue-600 hover:text-blue-700 text-sm font-medium focus:outline-none"
         >
           {isAdjusting ? 'Cancel' : 'Adjust'}
@@ -39,18 +59,18 @@ export default function TemperatureControl({
           <div className="flex items-center justify-center">
             <button
               type="button"
-              onClick={() => setTempValue((prev) => Math.max(prev - 1, 0))}
+              onClick={handleDecrement}
               className="w-12 h-12 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 focus:outline-none"
             >
               -
             </button>
             <div className="mx-6 text-center">
-              <div className="text-4xl font-bold text-gray-800">{tempValue}°C</div>
+              <div className="text-4xl font-bold text-gray-800">{Math.round(tempValue)}°C</div>
               <div className="text-sm text-gray-500">Target Temperature</div>
             </div>
             <button
               type="button"
-              onClick={() => setTempValue((prev) => Math.min(prev + 1, 35))}
+              onClick={handleIncrement}
               className="w-12 h-12 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 focus:outline-none"
             >
               +
@@ -78,7 +98,9 @@ export default function TemperatureControl({
             <div className="text-2xl text-gray-400">→</div>
             <div className="text-right">
               <div className="text-sm text-gray-500">Target</div>
-              <div className="text-xl font-semibold text-gray-800">{targetTemperature}°C</div>
+              <div className="text-xl font-semibold text-gray-800">
+                {Math.round(targetTemperature)}°C
+              </div>
             </div>
           </div>
         </div>

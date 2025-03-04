@@ -17,7 +17,7 @@ function saveFacilities(facilities: Facility[]) {
 // Function to fetch weather data from OpenWeather API
 async function fetchWeatherData(lat: number, lon: number) {
   const response = await fetch(
-    `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${OPENWEATHER_API_KEY}`
+    `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${OPENWEATHER_API_KEY}`
   );
 
   if (!response.ok) {
@@ -93,7 +93,7 @@ export async function addFacility(cityName: string, stateCode?: string): Promise
       longitude: location.lon,
     },
     weather,
-    targetTemperature: Math.round(weather.main.temp),
+    targetTemperature: 22, // Set a comfortable default temperature of 22°C (71.6°F)
   };
 
   // Add to localStorage
