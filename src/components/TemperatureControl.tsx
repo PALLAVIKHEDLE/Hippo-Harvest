@@ -1,110 +1,101 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
 interface Props {
   currentTemperature: number;
-  targetTemperature: number;
-  onTemperatureChange: (temperature: number) => void;
+  onTemperatureChange: (temp: number) => void;
 }
 
-export default function TemperatureControl({
-  currentTemperature,
-  targetTemperature,
-  onTemperatureChange,
-}: Props) {
-  const [isAdjusting, setIsAdjusting] = useState(false);
-  const [tempValue, setTempValue] = useState(targetTemperature);
+export default function TemperatureControl({ currentTemperature, onTemperatureChange }: Props) {
+  const MIN_TEMP = 16;
+  const MAX_TEMP = 28;
+  const STEP = 0.5;
 
-  // Update tempValue when targetTemperature changes
-  useEffect(() => {
-    setTempValue(targetTemperature);
-  }, [targetTemperature]);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onTemperatureChange(tempValue);
-    setIsAdjusting(false);
-  };
-
-  // Temperature limits in Celsius
-  const MIN_TEMP = 15;
-  const MAX_TEMP = 40; // Increased maximum temperature to 40°C
+  const presets = [
+    { temp: 18, label: 'Cool', icon: '❄️' },
+    { temp: 22, label: 'Comfort', icon: '😊' },
+    { temp: 24, label: 'Warm', icon: '☀️' },
+  ];
 
   const handleIncrement = () => {
-    const newTemp = Math.min(Math.round(tempValue + 1), MAX_TEMP);
-    setTempValue(newTemp);
+    if (currentTemperature < MAX_TEMP) {
+      onTemperatureChange(currentTemperature + STEP);
+    }
   };
 
   const handleDecrement = () => {
-    const newTemp = Math.max(Math.round(tempValue - 1), MIN_TEMP);
-    setTempValue(newTemp);
+    if (currentTemperature > MIN_TEMP) {
+      onTemperatureChange(currentTemperature - STEP);
+    }
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-800">Temperature Control</h3>
+    <div className="space-y-3">
+      {/* Temperature Control Header */}
+      <div className="flex items-center justify-between text-sm">
+        <div className="font-medium text-gray-800">Temperature Control</div>
+        <div className="text-gray-500">
+          {MIN_TEMP}°C - {MAX_TEMP}°C
+        </div>
+      </div>
+
+      {/* Main Temperature Control */}
+      <div className="flex items-center justify-between bg-white rounded-xl p-3 shadow-sm border border-gray-100">
         <button
-          onClick={() => {
-            setIsAdjusting(!isAdjusting);
-            setTempValue(targetTemperature); // Reset to current target when toggling
-          }}
-          className="text-blue-600 hover:text-blue-700 text-sm font-medium focus:outline-none"
+          onClick={handleDecrement}
+          disabled={currentTemperature <= MIN_TEMP}
+          className="w-10 h-10 flex items-center justify-center rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+          aria-label="Decrease temperature"
         >
-          {isAdjusting ? 'Cancel' : 'Adjust'}
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M20 12H4" />
+          </svg>
+        </button>
+
+        <div className="text-center px-3">
+          <div className="text-2xl font-bold text-gray-800 tracking-tight">
+            {currentTemperature.toFixed(1)}°C
+          </div>
+          <div className="text-xs text-gray-500">Target Temperature</div>
+        </div>
+
+        <button
+          onClick={handleIncrement}
+          disabled={currentTemperature >= MAX_TEMP}
+          className="w-10 h-10 flex items-center justify-center rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+          aria-label="Increase temperature"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2.5}
+              d="M12 4v16m8-8H4"
+            />
+          </svg>
         </button>
       </div>
 
-      {isAdjusting ? (
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="flex items-center justify-center">
-            <button
-              type="button"
-              onClick={handleDecrement}
-              className="w-12 h-12 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 focus:outline-none"
-            >
-              -
-            </button>
-            <div className="mx-6 text-center">
-              <div className="text-4xl font-bold text-gray-800">{Math.round(tempValue)}°C</div>
-              <div className="text-sm text-gray-500">Target Temperature</div>
-            </div>
-            <button
-              type="button"
-              onClick={handleIncrement}
-              className="w-12 h-12 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 focus:outline-none"
-            >
-              +
-            </button>
-          </div>
-
-          <div className="flex justify-end">
-            <button
-              type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            >
-              Update Temperature
-            </button>
-          </div>
-        </form>
-      ) : (
-        <div className="bg-gray-50 rounded-lg p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-sm text-gray-500">Current</div>
-              <div className="text-xl font-semibold text-gray-800">
-                {Math.round(currentTemperature)}°C
-              </div>
-            </div>
-            <div className="text-2xl text-gray-400">→</div>
-            <div className="text-right">
-              <div className="text-sm text-gray-500">Target</div>
-              <div className="text-xl font-semibold text-gray-800">
-                {Math.round(targetTemperature)}°C
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Preset Temperatures */}
+      <div className="grid grid-cols-3 gap-2">
+        {presets.map(({ temp, label, icon }) => (
+          <button
+            key={temp}
+            onClick={() => onTemperatureChange(temp)}
+            className={`
+              p-2 rounded-xl text-center transition-all duration-200
+              ${
+                currentTemperature === temp
+                  ? 'bg-blue-100 text-blue-700 shadow-inner'
+                  : 'bg-white text-gray-600 hover:bg-blue-50 shadow-sm border border-gray-100'
+              }
+            `}
+          >
+            <div className="text-lg">{icon}</div>
+            <div className="text-xs font-medium mt-0.5">{label}</div>
+            <div className="text-xs text-gray-500">{temp}°C</div>
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

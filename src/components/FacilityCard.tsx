@@ -1,94 +1,58 @@
 import React from 'react';
-import { Facility } from '../types/facilities';
+import { Facility } from '../types';
 import WeatherDisplay from './WeatherDisplay';
 import TemperatureControl from './TemperatureControl';
-import { useFacilities } from '../context/FacilityContext';
 
 interface Props {
   facility: Facility;
+  onTemperatureChange: (facilityId: string, temperature: number) => void;
+  onDelete: (facilityId: string) => void;
 }
 
-export default function FacilityCard({ facility }: Props) {
-  const { updateFacilityTemperature, deleteFacility } = useFacilities();
-
-  const handleTemperatureChange = async (newTemp: number) => {
-    try {
-      await updateFacilityTemperature(facility.id, newTemp);
-    } catch (error) {
-      console.error('Failed to update temperature:', error);
-    }
-  };
-
-  const handleDelete = async () => {
-    try {
-      await deleteFacility(facility.id);
-    } catch (error) {
-      console.error('Failed to delete facility:', error);
+export default function FacilityCard({ facility, onTemperatureChange, onDelete }: Props) {
+  const handleDelete = () => {
+    if (window.confirm(`Are you sure you want to delete ${facility.name}?`)) {
+      onDelete(facility.id);
     }
   };
 
   return (
-    <div className="bg-gradient-to-br from-white to-gray-50 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
-      {/* Header */}
-      <div className="p-6 border-b border-gray-100">
+    <div className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100">
+      {/* Facility Header */}
+      <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-3">
         <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-1">{facility.name}</h2>
-            <p className="text-gray-500 flex items-center">
-              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-              </svg>
-              {`${facility.location.city}, ${facility.location.state}`}
-            </p>
+          <div className="flex items-center text-white">
+            <span className="text-lg mr-2">📍</span>
+            <div>
+              <h3 className="font-medium">{facility.name}</h3>
+              <p className="text-xs text-blue-100">
+                {facility.location.city}, {facility.location.country}
+              </p>
+            </div>
           </div>
           <button
             onClick={handleDelete}
-            className="text-gray-400 hover:text-red-500 transition-colors"
-            title="Delete facility"
+            className="text-white opacity-60 hover:opacity-100 transition-opacity"
+            aria-label="Delete facility"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
-                fillRule="evenodd"
-                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                clipRule="evenodd"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
               />
             </svg>
           </button>
         </div>
       </div>
 
-      {/* Weather Display */}
-      <div className="p-6 bg-white">
-        <WeatherDisplay
-          weather={facility.weather}
-          targetTemperature={facility.targetTemperature}
-          onTemperatureChange={handleTemperatureChange}
-        />
-      </div>
-
-      {/* Temperature Control */}
-      <div className="p-6 bg-gray-50">
+      {/* Weather and Temperature Controls */}
+      <div className="p-3 space-y-4">
+        <WeatherDisplay weather={facility.weather} targetTemperature={facility.targetTemperature} />
         <TemperatureControl
-          facilityId={facility.id}
-          currentTemperature={facility.weather?.main.temp ?? 0}
-          targetTemperature={facility.targetTemperature}
-          onTemperatureChange={handleTemperatureChange}
+          currentTemperature={facility.targetTemperature}
+          onTemperatureChange={(temp) => onTemperatureChange(facility.id, temp)}
         />
       </div>
     </div>

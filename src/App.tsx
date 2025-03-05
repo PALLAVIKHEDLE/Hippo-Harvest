@@ -1,100 +1,116 @@
 import React, { useState } from 'react';
 import { useFacilities } from './context/FacilityContext';
-import AddFacility from './components/AddFacility';
-import StateSelector from './components/StateSelector';
+import { GlobalSettingsProvider } from './context/GlobalSettingsContext';
 import FacilityCard from './components/FacilityCard';
+import AddFacilityModal from './components/AddFacilityModal';
+import { Cog6ToothIcon as CogIcon, PlusIcon } from '@heroicons/react/24/outline';
+import GlobalSettings from './components/GlobalSettings';
 
-function App() {
-  const [selectedState, setSelectedState] = useState<string | null>(null);
-  const { facilities = [], loading, error } = useFacilities();
-
-  // Filter facilities by selected state
-  const filteredFacilities =
-    selectedState && facilities
-      ? facilities.filter((f) => f?.location?.state === selectedState)
-      : facilities;
+function AppContent() {
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const {
+    facilities = [],
+    loading,
+    error,
+    deleteFacility,
+    updateFacilityTemperature,
+  } = useFacilities();
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gray-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Temperature Control Dashboard</h1>
-          <p className="text-lg text-gray-600">
-            Monitor and manage facility temperatures in real-time
-          </p>
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Temperature Control System</h1>
+            <p className="mt-2 text-sm text-gray-600">
+              Monitor and manage facility temperatures in real-time
+            </p>
+          </div>
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={() => setIsAddModalOpen(true)}
+              className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              <PlusIcon className="h-5 w-5 mr-2" />
+              Add Facility
+            </button>
+            <button
+              onClick={() => setIsSettingsOpen(true)}
+              className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg focus:outline-none"
+              title="Global Settings"
+            >
+              <CogIcon className="h-6 w-6" />
+            </button>
+          </div>
         </div>
 
-        {/* Main Grid Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column - Add Facility Form */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-8">
-              <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-                <div className="p-6">
-                  <h2 className="text-2xl font-semibold text-gray-800 mb-6">Add New Facility</h2>
-                  <AddFacility />
-                </div>
+        {/* Loading State */}
+        {loading && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-white rounded-xl shadow-lg p-6 animate-pulse">
+                <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
+                <div className="h-24 bg-gray-200 rounded mb-4"></div>
+                <div className="h-12 bg-gray-200 rounded"></div>
               </div>
-            </div>
+            ))}
           </div>
+        )}
 
-          {/* Right Column - Facilities List */}
-          <div className="lg:col-span-2">
-            {/* State Filter */}
-            <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-              <StateSelector selectedState={selectedState} onStateChange={setSelectedState} />
-            </div>
+        {/* Error State */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg">
+            <h3 className="text-lg font-medium">Error</h3>
+            <p className="mt-1 text-sm">{error}</p>
+          </div>
+        )}
 
-            {/* Loading State */}
-            {loading && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="bg-white rounded-xl shadow-lg p-6 animate-pulse">
-                    <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
-                    <div className="h-24 bg-gray-200 rounded mb-4"></div>
-                    <div className="h-12 bg-gray-200 rounded"></div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Error State */}
-            {error && (
-              <div className="bg-red-50 text-red-700 p-6 rounded-xl">
-                <h3 className="text-lg font-semibold mb-2">Error</h3>
-                <p>{error}</p>
-              </div>
-            )}
-
-            {/* Facilities Grid */}
-            {!loading && !error && (
-              <div>
-                {filteredFacilities && filteredFacilities.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {filteredFacilities.map((facility) =>
-                      facility ? <FacilityCard key={facility.id} facility={facility} /> : null
-                    )}
-                  </div>
-                ) : (
-                  <div className="bg-white rounded-xl shadow-lg p-8 text-center">
-                    <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                      {selectedState ? `No Facilities in ${selectedState}` : 'No Facilities Found'}
-                    </h3>
-                    <p className="text-gray-600">
-                      {selectedState
-                        ? 'Try selecting a different state or add a new facility.'
-                        : 'Add your first facility using the form on the left.'}
-                    </p>
-                  </div>
+        {/* Facilities Grid */}
+        {!loading && !error && (
+          <div>
+            {facilities && facilities.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {facilities.map((facility) =>
+                  facility ? (
+                    <FacilityCard
+                      key={facility.id}
+                      facility={facility}
+                      onDelete={deleteFacility}
+                      onTemperatureChange={updateFacilityTemperature}
+                    />
+                  ) : null
                 )}
               </div>
+            ) : (
+              <div className="text-center py-12">
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No Facilities Found</h3>
+                <p className="text-gray-500 mb-6">Add your first facility to get started</p>
+                <button
+                  onClick={() => setIsAddModalOpen(true)}
+                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+                >
+                  <PlusIcon className="h-5 w-5 mr-2" />
+                  Add Facility
+                </button>
+              </div>
             )}
           </div>
-        </div>
+        )}
       </div>
+
+      {/* Modals */}
+      <GlobalSettings isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+      <AddFacilityModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} />
     </div>
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <GlobalSettingsProvider>
+      <AppContent />
+    </GlobalSettingsProvider>
+  );
+}

@@ -16,15 +16,30 @@ function saveFacilities(facilities: Facility[]) {
 
 // Function to fetch weather data from OpenWeather API
 async function fetchWeatherData(lat: number, lon: number) {
-  const response = await fetch(
-    `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${OPENWEATHER_API_KEY}`
-  );
+  try {
+    const response = await fetch(
+      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${OPENWEATHER_API_KEY}`
+    );
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch weather data');
+    if (!response.ok) {
+      throw new Error('Failed to fetch weather data');
+    }
+
+    const data = await response.json();
+
+    // Log the data to help debug timezone issues
+    console.log('Weather data received:', {
+      city: data.name,
+      timezone: data.timezone,
+      sunrise: new Date(data.sys.sunrise * 1000).toISOString(),
+      sunset: new Date(data.sys.sunset * 1000).toISOString(),
+    });
+
+    return data;
+  } catch (error) {
+    console.error('Error fetching weather data:', error);
+    throw error;
   }
-
-  return response.json();
 }
 
 // Function to get coordinates from city name using OpenWeather Geocoding API
