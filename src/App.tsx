@@ -9,13 +9,7 @@ import GlobalSettings from './components/GlobalSettings';
 function AppContent() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const {
-    facilities = [],
-    loading,
-    error,
-    deleteFacility,
-    updateFacilityTemperature,
-  } = useFacilities();
+  const { facilities = [], loading, deleteFacility, updateFacilityTemperature } = useFacilities();
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -59,16 +53,8 @@ function AppContent() {
           </div>
         )}
 
-        {/* Error State */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg">
-            <h3 className="text-lg font-medium">Error</h3>
-            <p className="mt-1 text-sm">{error}</p>
-          </div>
-        )}
-
         {/* Facilities Grid */}
-        {!loading && !error && (
+        {!loading && (
           <div>
             {facilities && facilities.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -589,20 +589,6 @@ const GlobalSettings: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
           </Tab.Group>
         </div>
       </div>
-
-      {/* Global Actions */}
-      <div className="mt-6 border-t pt-4">
-        <h3 className="text-sm font-medium text-gray-900 mb-3">Global Actions</h3>
-        <button
-          onClick={() => resetToLocal()}
-          disabled={loading}
-          className="w-full bg-white text-blue-600 hover:text-blue-800 border border-blue-600 font-medium py-2 px-4 rounded-md hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          title="Reset all facilities to their local weather temperature (defaults to 22°C if weather data unavailable)"
-        >
-          Reset All to Local Temperature
-          {loading && ' ...'}
-        </button>
-      </div>
     </div>
   );
 };

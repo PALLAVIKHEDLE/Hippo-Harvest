@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFacilities } from '../context/FacilityContext';
 
 interface Props {
@@ -26,11 +26,33 @@ export default function AddFacilityModal({ isOpen, onClose }: Props) {
     }
   };
 
+  const handleClose = () => {
+    setError('');
+    setCity('');
+    setState('');
+    onClose();
+  };
+
+  // Reset form state when modal is opened
+  useEffect(() => {
+    if (isOpen) {
+      setError('');
+      setCity('');
+      setState('');
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+      onClick={handleClose}
+    >
+      <div
+        className="bg-white rounded-xl shadow-xl max-w-md w-full p-6"
+        onClick={(e) => e.stopPropagation()}
+      >
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Add New Facility</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -70,7 +92,7 @@ export default function AddFacilityModal({ isOpen, onClose }: Props) {
           <div className="flex justify-end space-x-3 pt-4">
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleClose}
               className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-800 focus:outline-none"
             >
               Cancel
