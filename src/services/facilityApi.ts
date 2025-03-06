@@ -27,14 +27,6 @@ async function fetchWeatherData(lat: number, lon: number) {
 
     const data = await response.json();
 
-    // Log the data to help debug timezone issues
-    console.log('Weather data received:', {
-      city: data.name,
-      timezone: data.timezone,
-      sunrise: new Date(data.sys.sunrise * 1000).toISOString(),
-      sunset: new Date(data.sys.sunset * 1000).toISOString(),
-    });
-
     return data;
   } catch (error) {
     console.error('Error fetching weather data:', error);

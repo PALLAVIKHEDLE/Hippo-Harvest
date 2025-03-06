@@ -23,10 +23,6 @@ export function WeatherProvider({ children }: { children: React.ReactNode }) {
   const updateFacilityWeather = useCallback(async (facility: Facility) => {
     try {
       setState((prev) => ({ ...prev, isLoading: true, error: null }));
-      console.log('Updating weather for facility:', {
-        facilityId: facility.id,
-        location: facility.location,
-      });
 
       const weatherData = await fetchWeatherData(
         facility.location.latitude,
@@ -34,10 +30,6 @@ export function WeatherProvider({ children }: { children: React.ReactNode }) {
       );
 
       facility.weather = weatherData;
-      console.log('Updated facility weather:', {
-        facilityId: facility.id,
-        weather: weatherData,
-      });
 
       setState((prev) => ({ ...prev, isLoading: false }));
     } catch (error) {
@@ -56,17 +48,12 @@ export function WeatherProvider({ children }: { children: React.ReactNode }) {
   const updateAllFacilitiesWeather = useCallback(async (facilities: Facility[]) => {
     try {
       setState((prev) => ({ ...prev, isLoading: true, error: null }));
-      console.log('Updating weather for all facilities:', {
-        facilityCount: facilities.length,
-        facilities: facilities.map((f) => ({ id: f.id, location: f.location })),
-      });
 
       const weatherPromises = facilities.map((facility) =>
         fetchWeatherData(facility.location.latitude, facility.location.longitude)
       );
 
       const weatherResults = await Promise.all(weatherPromises);
-      console.log('Received weather data for all facilities:', weatherResults);
 
       facilities.forEach((facility, index) => {
         facility.weather = weatherResults[index];
