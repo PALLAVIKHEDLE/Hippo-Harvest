@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { Facility } from '../types';
 import { GeocodingResponse } from '../types/weather';
 import * as api from '../services/facilityApi';
+import { GlobalSettingsContext } from './GlobalSettingsContext';
 
 interface CityInfo {
   name: string;
@@ -16,17 +17,33 @@ interface FacilityContextType {
   updateFacilityTemperature: (id: string, temperature: number) => Promise<void>;
   deleteFacility: (id: string) => Promise<void>;
   refreshWeatherData: () => Promise<void>;
+  resetToLocal: (facilityId?: string) => Promise<void>;
 }
 
-const FacilityContext = createContext<FacilityContextType>({
+const defaultContextValue: FacilityContextType = {
   facilities: [],
   loading: false,
   error: null,
-  addFacility: async () => {},
-  updateFacilityTemperature: async () => {},
-  deleteFacility: async () => {},
-  refreshWeatherData: async () => {},
-});
+  addFacility: async () => {
+    throw new Error('FacilityContext not initialized');
+  },
+  updateFacilityTemperature: async () => {
+    throw new Error('FacilityContext not initialized');
+  },
+  deleteFacility: async () => {
+    throw new Error('FacilityContext not initialized');
+  },
+  refreshWeatherData: async () => {
+    throw new Error('FacilityContext not initialized');
+  },
+  resetToLocal: async () => {
+    throw new Error('FacilityContext not initialized');
+  },
+};
+
+export const FacilityContext = createContext<FacilityContextType>(defaultContextValue);
+
+FacilityContext.displayName = 'FacilityContext';
 
 // Fetch popular US cities from an external API
 async function fetchPopularCities(): Promise<CityInfo[]> {
@@ -52,10 +69,13 @@ async function fetchPopularCities(): Promise<CityInfo[]> {
   }
 }
 
-export function FacilityProvider({ children }: { children: React.ReactNode }) {
+export const FacilityProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [facilities, setFacilities] = useState<Facility[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { temperaturePresets } = useContext(GlobalSettingsContext) ?? {
+    temperaturePresets: { day: 22, night: 18, weekend: 20 },
+  };
 
   // Function to refresh weather data for all facilities
   const refreshWeatherData = useCallback(async () => {
@@ -66,6 +86,51 @@ export function FacilityProvider({ children }: { children: React.ReactNode }) {
       console.error('Failed to refresh weather data:', error);
     }
   }, []);
+
+  // Apply global temperature preset to all facilities when it changes
+  useEffect(() => {
+    if (!temperaturePresets) return;
+
+    const applyGlobalPreset = async () => {
+      try {
+        // Get current hour to determine if it's day/night/weekend
+        const currentHour = new Date().getHours();
+        const isWeekend = [0, 6].includes(new Date().getDay());
+
+        // Determine which preset to use
+        let targetTemp;
+        if (isWeekend) {
+          targetTemp = temperaturePresets.weekend;
+        } else if (currentHour >= 8 && currentHour < 20) {
+          // Day time: 8 AM to 8 PM
+          targetTemp = temperaturePresets.day;
+        } else {
+          targetTemp = temperaturePresets.night;
+        }
+
+        // Update facilities in the API but don't trigger state updates
+        await Promise.all(
+          facilities.map(async (facility) => {
+            try {
+              await api.updateFacilityTemperature(facility.id, targetTemp);
+            } catch (error) {
+              console.error(`Failed to update temperature for facility ${facility.id}:`, error);
+            }
+          })
+        );
+
+        // Update state once after all updates are done
+        const updatedFacilities = await api.getFacilities();
+        setFacilities(updatedFacilities);
+      } catch (error) {
+        console.error('Failed to apply global temperature preset:', error);
+      }
+    };
+
+    if (facilities.length > 0) {
+      applyGlobalPreset();
+    }
+  }, [temperaturePresets]); // Only depend on temperaturePresets, not facilities
 
   // Load facilities from localStorage and initialize default cities if needed
   useEffect(() => {
@@ -118,9 +183,15 @@ export function FacilityProvider({ children }: { children: React.ReactNode }) {
 
   // Periodically refresh weather data
   useEffect(() => {
+    // Initial refresh
+    refreshWeatherData();
+
+    // Set up interval for future refreshes
     const intervalId = setInterval(refreshWeatherData, 5 * 60 * 1000); // Every 5 minutes
+
+    // Cleanup interval on unmount
     return () => clearInterval(intervalId);
-  }, [refreshWeatherData]);
+  }, []); // Empty dependency array since refreshWeatherData is stable
 
   const addFacility = useCallback(async (city: string, stateCode?: string) => {
     try {
@@ -161,6 +232,42 @@ export function FacilityProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  // Function to reset temperature to local weather
+  const resetToLocal = useCallback(
+    async (facilityId?: string) => {
+      try {
+        setError(null);
+        const targetFacilities = facilityId
+          ? facilities.filter((f) => f.id === facilityId)
+          : facilities;
+
+        await Promise.all(
+          targetFacilities.map(async (facility) => {
+            const comfortTemp = 22; // Default comfort temperature in Celsius
+            let localTemp;
+
+            if (facility.weather?.main.temp) {
+              // Weather API returns temperature in Celsius (units=metric)
+              localTemp = Math.round(facility.weather.main.temp);
+            } else {
+              localTemp = comfortTemp;
+            }
+
+            await api.updateFacilityTemperature(facility.id, localTemp);
+          })
+        );
+
+        // Refresh all facilities after updates
+        const updatedFacilities = await api.getFacilities();
+        setFacilities(updatedFacilities);
+      } catch (error: unknown) {
+        setError(error instanceof Error ? error.message : 'Failed to reset temperature');
+        throw error;
+      }
+    },
+    [facilities]
+  );
+
   return (
     <FacilityContext.Provider
       value={{
@@ -171,17 +278,18 @@ export function FacilityProvider({ children }: { children: React.ReactNode }) {
         updateFacilityTemperature,
         deleteFacility,
         refreshWeatherData,
+        resetToLocal,
       }}
     >
       {children}
     </FacilityContext.Provider>
   );
-}
+};
 
-export function useFacilities() {
+export const useFacilities = () => {
   const context = useContext(FacilityContext);
   if (!context) {
     throw new Error('useFacilities must be used within a FacilityProvider');
   }
   return context;
-}
+};

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-interface TemperaturePreset {
+export interface TemperaturePreset {
   day: number;
   night: number;
   weekend: number;
@@ -36,7 +36,9 @@ interface GlobalSettingsContextType {
   setEnergySavingBands: (bands: EnergySavingBands) => void;
 }
 
-const GlobalSettingsContext = createContext<GlobalSettingsContextType | undefined>(undefined);
+export const GlobalSettingsContext = createContext<GlobalSettingsContextType | undefined>(
+  undefined
+);
 
 export function GlobalSettingsProvider({ children }: { children: React.ReactNode }) {
   const [temperaturePresets, setTemperaturePresets] = useState<TemperaturePreset>({

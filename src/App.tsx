@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useFacilities } from './context/FacilityContext';
+import { useFacilities, FacilityProvider } from './context/FacilityContext';
 import { GlobalSettingsProvider } from './context/GlobalSettingsContext';
 import FacilityCard from './components/FacilityCard';
 import AddFacilityModal from './components/AddFacilityModal';
@@ -110,7 +110,9 @@ function AppContent() {
 export default function App() {
   return (
     <GlobalSettingsProvider>
-      <AppContent />
+      <FacilityProvider>
+        <AppContent />
+      </FacilityProvider>
     </GlobalSettingsProvider>
   );
 }

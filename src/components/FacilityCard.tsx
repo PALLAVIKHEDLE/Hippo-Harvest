@@ -47,13 +47,40 @@ export default function FacilityCard({ facility, onTemperatureChange, onDelete }
         </div>
       </div>
 
-      {/* Weather and Temperature Controls */}
-      <div className="p-3 space-y-4">
+      {/* Weather Display */}
+      <div className="p-3">
         <WeatherDisplay weather={facility.weather} targetTemperature={facility.targetTemperature} />
-        <TemperatureControl
-          currentTemperature={facility.targetTemperature}
-          onTemperatureChange={(temp) => onTemperatureChange(facility.id, temp)}
-        />
+      </div>
+
+      {/* Temperature Controls */}
+      <div className="border-t border-gray-100">
+        <div className="p-3">
+          <TemperatureControl
+            currentTemperature={facility.targetTemperature}
+            onTemperatureChange={(temp) => onTemperatureChange(facility.id, temp)}
+          />
+        </div>
+        <button
+          onClick={() => {
+            // Reset to weather-based temperature if available, otherwise use comfort temperature (22°C)
+            const comfortTemp = 22; // Default comfort temperature in Celsius
+            let localTemp;
+
+            if (facility.weather?.main.temp) {
+              // Weather API returns temperature in Celsius (units=metric)
+              localTemp = Math.round(facility.weather.main.temp);
+            } else {
+              localTemp = comfortTemp;
+            }
+
+            onTemperatureChange(facility.id, localTemp);
+          }}
+          className="w-full p-2 text-sm text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 transition-colors border-t border-gray-100 flex items-center justify-center"
+          title={`Reset to local weather temperature (defaults to ${22}°C if weather data unavailable)`}
+        >
+          <span className="mr-2">🌡️</span>
+          Reset to Local Weather
+        </button>
       </div>
     </div>
   );

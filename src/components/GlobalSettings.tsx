@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Tab } from '@headlessui/react';
 import { Cog6ToothIcon as CogIcon } from '@heroicons/react/24/outline';
-import { useGlobalSettings } from '../context/GlobalSettingsContext';
+import { GlobalSettingsContext } from '../context/GlobalSettingsContext';
+import { FacilityContext } from '../context/FacilityContext';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -9,6 +10,12 @@ interface SettingsModalProps {
 }
 
 const GlobalSettings: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
+  const context = React.useContext(GlobalSettingsContext);
+  const { resetToLocal, loading } = React.useContext(FacilityContext);
+
+  if (!context) {
+    throw new Error('GlobalSettings must be used within a GlobalSettingsProvider');
+  }
   const {
     temperaturePresets,
     setTemperaturePresets,
@@ -18,7 +25,7 @@ const GlobalSettings: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
     setSeasonalProfiles,
     energySavingBands,
     setEnergySavingBands,
-  } = useGlobalSettings();
+  } = context;
 
   // Create local state to store changes before saving
   const [localSettings, setLocalSettings] = useState({
@@ -62,10 +69,26 @@ const GlobalSettings: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
   };
 
   const tabs = [
-    { name: 'Temperature', icon: '🌡️' },
-    { name: 'Seasonal', icon: '🍂' },
-    { name: 'Energy', icon: '⚡' },
-    { name: 'Alerts', icon: '🔔' },
+    {
+      name: 'Temperature',
+      icon: '🌡️',
+      tooltip: 'Set day, night & weekend temperature presets',
+    },
+    {
+      name: 'Seasonal',
+      icon: '🍂',
+      tooltip: 'Configure temperature profiles for each season',
+    },
+    {
+      name: 'Energy',
+      icon: '⚡',
+      tooltip: 'Manage peak and off-peak energy usage bands',
+    },
+    {
+      name: 'Alerts',
+      icon: '🔔',
+      tooltip: 'Set temperature thresholds for notifications',
+    },
   ];
 
   if (!isOpen) return null;
@@ -105,9 +128,28 @@ const GlobalSettings: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                     }`
                   }
                 >
-                  <span className="flex items-center space-x-2">
+                  <span className="flex items-center space-x-2 group relative">
                     <span>{tab.icon}</span>
                     <span>{tab.name}</span>
+                    <span className="ml-1 text-gray-400 group-hover:text-gray-600">
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                    </span>
+                    <div className="absolute bottom-full left-1/2  mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+                      {tab.tooltip}
+                      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-2 h-2 bg-gray-900 rotate-45"></div>
+                    </div>
                   </span>
                 </Tab>
               ))}
@@ -118,6 +160,36 @@ const GlobalSettings: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                 {/* Temperature Presets Panel */}
                 <Tab.Panel>
                   <div className="space-y-6">
+                    {/* Local Weather Sync */}
+                    <div className="bg-white p-6 rounded-lg shadow mb-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <h3 className="text-lg font-medium">Local Weather Sync</h3>
+                          <p className="text-sm text-gray-600 mt-1">
+                            Reset all facilities to match their local weather temperatures
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => resetToLocal()}
+                          disabled={loading}
+                          className="inline-flex items-center px-4 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Reset all facilities to their local weather temperature (defaults to 22°C if weather data unavailable)"
+                        >
+                          <span className="mr-2">🌡️</span>
+                          Reset All Facilities
+                          {loading && ' ...'}
+                        </button>
+                      </div>
+                      <div className="text-sm text-gray-500 bg-gray-50 rounded p-3 flex items-start">
+                        <span className="text-amber-500 mr-2">⚠️</span>
+                        <p>
+                          If weather data is unavailable for any facility, its temperature will
+                          default to 22°C (comfort temperature)
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Daily Temperature Presets */}
                     <div className="bg-white p-6 rounded-lg shadow">
                       <h3 className="text-lg font-medium mb-4">Daily Temperature Presets</h3>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -516,6 +588,20 @@ const GlobalSettings: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
             </Tab.Panels>
           </Tab.Group>
         </div>
+      </div>
+
+      {/* Global Actions */}
+      <div className="mt-6 border-t pt-4">
+        <h3 className="text-sm font-medium text-gray-900 mb-3">Global Actions</h3>
+        <button
+          onClick={() => resetToLocal()}
+          disabled={loading}
+          className="w-full bg-white text-blue-600 hover:text-blue-800 border border-blue-600 font-medium py-2 px-4 rounded-md hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          title="Reset all facilities to their local weather temperature (defaults to 22°C if weather data unavailable)"
+        >
+          Reset All to Local Temperature
+          {loading && ' ...'}
+        </button>
       </div>
     </div>
   );

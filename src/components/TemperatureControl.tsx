@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { GlobalSettingsContext } from '../context/GlobalSettingsContext';
 
 interface Props {
   currentTemperature: number;
@@ -6,8 +7,12 @@ interface Props {
 }
 
 export default function TemperatureControl({ currentTemperature, onTemperatureChange }: Props) {
-  const MIN_TEMP = 16;
-  const MAX_TEMP = 28;
+  const [alert, setAlert] = useState<{ message: string; type: 'warning' | 'error' } | null>(null);
+  const { temperatureThresholds } = React.useContext(GlobalSettingsContext) ?? {
+    temperatureThresholds: { min: 16, max: 28, alertEnabled: true },
+  };
+  const MIN_TEMP = temperatureThresholds.min;
+  const MAX_TEMP = temperatureThresholds.max;
   const STEP = 0.5;
 
   const presets = [
@@ -17,19 +22,59 @@ export default function TemperatureControl({ currentTemperature, onTemperatureCh
   ];
 
   const handleIncrement = () => {
-    if (currentTemperature < MAX_TEMP) {
-      onTemperatureChange(currentTemperature + STEP);
+    const newTemp = currentTemperature + STEP;
+    onTemperatureChange(newTemp);
+
+    if (newTemp > MAX_TEMP) {
+      setAlert({
+        message: `Temperature ${newTemp.toFixed(1)}°C exceeds maximum threshold of ${MAX_TEMP}°C`,
+        type: 'error',
+      });
+    } else {
+      setAlert(null);
     }
   };
 
   const handleDecrement = () => {
-    if (currentTemperature > MIN_TEMP) {
-      onTemperatureChange(currentTemperature - STEP);
+    const newTemp = currentTemperature - STEP;
+    onTemperatureChange(newTemp);
+
+    if (newTemp < MIN_TEMP) {
+      setAlert({
+        message: `Temperature ${newTemp.toFixed(1)}°C is below minimum threshold of ${MIN_TEMP}°C`,
+        type: 'error',
+      });
+    } else {
+      setAlert(null);
     }
   };
 
+  useEffect(() => {
+    // Check temperature bounds on component mount and temperature changes
+    if (currentTemperature > MAX_TEMP) {
+      setAlert({
+        message: `Temperature ${currentTemperature.toFixed(1)}°C exceeds maximum threshold of ${MAX_TEMP}°C`,
+        type: 'error',
+      });
+    } else if (currentTemperature < MIN_TEMP) {
+      setAlert({
+        message: `Temperature ${currentTemperature.toFixed(1)}°C is below minimum threshold of ${MIN_TEMP}°C`,
+        type: 'error',
+      });
+    } else {
+      setAlert(null);
+    }
+  }, [currentTemperature, MAX_TEMP, MIN_TEMP]);
+
   return (
     <div className="space-y-3">
+      {alert && (
+        <div
+          className={`p-2 rounded-lg text-sm ${alert.type === 'error' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'}`}
+        >
+          {alert.message}
+        </div>
+      )}
       {/* Temperature Control Header */}
       <div className="flex items-center justify-between text-sm">
         <div className="font-medium text-gray-800">Temperature Control</div>
@@ -42,7 +87,6 @@ export default function TemperatureControl({ currentTemperature, onTemperatureCh
       <div className="flex items-center justify-between bg-white rounded-xl p-3 shadow-sm border border-gray-100">
         <button
           onClick={handleDecrement}
-          disabled={currentTemperature <= MIN_TEMP}
           className="w-10 h-10 flex items-center justify-center rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
           aria-label="Decrease temperature"
         >
@@ -60,7 +104,6 @@ export default function TemperatureControl({ currentTemperature, onTemperatureCh
 
         <button
           onClick={handleIncrement}
-          disabled={currentTemperature >= MAX_TEMP}
           className="w-10 h-10 flex items-center justify-center rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
           aria-label="Increase temperature"
         >

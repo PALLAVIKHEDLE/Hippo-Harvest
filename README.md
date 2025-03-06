@@ -1,4 +1,3 @@
-
 # Hippo Harvest Frontend Engineer Interview
 
 Thanks for investing the time into completing a project for our Frontend Engineer opening.
@@ -9,16 +8,16 @@ It’s the year 2028, and your task is to build a temperature control system for
 
 The goals for this project are to demonstrate your ability to:
 
-* Interact with a backend API
-* Display data and support interactions around that data
-* Design an intuitive UI that supports your target use cases
+- Interact with a backend API
+- Display data and support interactions around that data
+- Design an intuitive UI that supports your target use cases
 
 The task is reasonably open ended, and we invite you to imagine what exactly those use cases may be. Here are a few examples:
 
-* A user may want to group facilities that have similar weather at the current time, and adjust them in tandem
-* A user may want to sort facilities by different criteria
-* A user may want to the ability to make a coarse adjustment that effects everything, and then make individual finer adjustments
-* A user may want to add a new facility, or consider a particular site for expansion
+- A user may want to group facilities that have similar weather at the current time, and adjust them in tandem
+- A user may want to sort facilities by different criteria
+- A user may want to the ability to make a coarse adjustment that effects everything, and then make individual finer adjustments
+- A user may want to add a new facility, or consider a particular site for expansion
 
 Your solution need not be exhaustive; the goal is instead to articulate a few target use cases, and talk through the process of how you built a system that supports those use cases.
 
