@@ -25,7 +25,7 @@ export default function FacilityCard({ facility, onTemperatureChange, onDelete }
             <div>
               <h3 className="font-medium text-black">{facility.name}</h3>
               <p className="text-sm text-gray-600">
-                {facility.location.city}, {facility.location.country}
+                {facility.location.city}, {facility.location.state}
               </p>
             </div>
           </div>

@@ -94,8 +94,8 @@ const GlobalSettings: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-[9999]">
-      <div className="bg-white rounded-lg w-3/4 max-w-4xl h-[calc(100vh-120px)] overflow-hidden shadow-xl border border-gray-200">
+    <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-[9999] p-6">
+      <div className="bg-white rounded-lg w-full max-w-4xl h-[calc(100vh-120px)] overflow-hidden shadow-xl border border-gray-200">
         <div className="flex flex-col h-full">
           <div className="flex items-center justify-between p-4 border-b">
             <div className="flex items-center space-x-2">
@@ -115,48 +115,56 @@ const GlobalSettings: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
             </div>
           </div>
 
-          <Tab.Group>
+          <Tab.Group className="flex flex-col flex-1 overflow-hidden">
             <Tab.List className="flex space-x-1 p-4 bg-gray-50">
               {tabs.map((tab) => (
                 <Tab
                   key={tab.name}
                   className={({ selected }) =>
-                    `px-4 py-2 rounded-lg text-sm font-medium focus:outline-none ${
-                      selected
-                        ? 'bg-white shadow text-green-600'
-                        : 'text-gray-600 hover:bg-white/[0.5] hover:text-gray-700'
-                    }`
+                    `px-4 py-2 rounded-lg text-sm font-medium focus:outline-none ${selected ? 'bg-white shadow text-green-600' : 'text-gray-600 hover:bg-white/[0.5] hover:text-gray-700'}`
                   }
                 >
-                  <span className="flex items-center space-x-2 group relative">
+                  <div className="inline-flex items-center">
                     <span>{tab.icon}</span>
-                    <span>{tab.name}</span>
-                    <span className="ml-1 text-gray-400 group-hover:text-gray-600">
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                    <span className="ml-2">{tab.name}</span>
+                    <div className="relative inline-flex items-center ml-1.5">
+                      <button
+                        type="button"
+                        className="peer inline-flex items-center text-gray-400 hover:text-gray-600 focus:outline-none translate-y-[1px]"
+                        aria-label={`Show info about ${tab.name} settings`}
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        <svg
+                          className="w-3.5 h-3.5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                      </button>
+                      <div
+                        role="tooltip"
+                        className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 invisible peer-hover:opacity-100 peer-hover:visible transition-all duration-200 whitespace-nowrap z-[9999]"
+                      >
+                        {tab.tooltip}
+                        <div
+                          className="absolute top-full left-1/2 -translate-x-1/2 -translate-y-1 border-4 border-transparent border-t-gray-900"
+                          aria-hidden="true"
                         />
-                      </svg>
-                    </span>
-                    <div className="absolute bottom-full left-1/2  mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
-                      {tab.tooltip}
-                      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-2 h-2 bg-gray-800 rotate-45"></div>
+                      </div>
                     </div>
-                  </span>
+                  </div>
                 </Tab>
               ))}
             </Tab.List>
 
-            <Tab.Panels className="flex-1 overflow-y-auto">
-              <div className="p-4">
+            <Tab.Panels className="flex-1 overflow-hidden">
+              <div className="h-full overflow-y-auto px-4 pb-4">
                 <Tab.Panel>
                   <div className="space-y-6">
                     <div className="bg-white p-6 rounded-lg shadow mb-6">
