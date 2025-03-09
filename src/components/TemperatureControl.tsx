@@ -75,7 +75,6 @@ export default function TemperatureControl({ currentTemperature, onTemperatureCh
           {alert.message}
         </div>
       )}
-      {/* Temperature Control Header */}
       <div className="flex items-center justify-between text-sm">
         <div className="font-medium text-gray-800">Temperature Control</div>
         <div className="text-gray-500">
@@ -83,11 +82,10 @@ export default function TemperatureControl({ currentTemperature, onTemperatureCh
         </div>
       </div>
 
-      {/* Main Temperature Control */}
       <div className="flex items-center justify-between bg-white rounded-xl p-3 shadow-sm border border-gray-100">
         <button
           onClick={handleDecrement}
-          className="w-10 h-10 flex items-center justify-center rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+          className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
           aria-label="Decrease temperature"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -104,7 +102,7 @@ export default function TemperatureControl({ currentTemperature, onTemperatureCh
 
         <button
           onClick={handleIncrement}
-          className="w-10 h-10 flex items-center justify-center rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+          className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
           aria-label="Increase temperature"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -118,7 +116,6 @@ export default function TemperatureControl({ currentTemperature, onTemperatureCh
         </button>
       </div>
 
-      {/* Preset Temperatures */}
       <div className="grid grid-cols-3 gap-2">
         {presets.map(({ temp, label, icon }) => (
           <button
@@ -128,8 +125,8 @@ export default function TemperatureControl({ currentTemperature, onTemperatureCh
               p-2 rounded-xl text-center transition-all duration-200
               ${
                 currentTemperature === temp
-                  ? 'bg-blue-100 text-blue-700 shadow-inner'
-                  : 'bg-white text-gray-600 hover:bg-blue-50 shadow-sm border border-gray-100'
+                  ? 'bg-gray-100 text-gray-900 shadow-inner'
+                  : 'bg-white text-gray-700 hover:bg-gray-50 shadow-sm border border-gray-200'
               }
             `}
           >

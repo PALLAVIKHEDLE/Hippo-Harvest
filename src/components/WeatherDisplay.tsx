@@ -9,10 +9,10 @@ interface Props {
 export default function WeatherDisplay({ weather, targetTemperature }: Props) {
   if (!weather) {
     return (
-      <div className="flex items-center justify-center h-32 bg-gray-50 rounded-lg">
-        <div className="text-gray-500 flex items-center">
+      <div className="flex items-center justify-center h-32 bg-white rounded-lg shadow-sm">
+        <div className="text-primary-600 flex items-center">
           <svg
-            className="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-500"
+            className="animate-spin -ml-1 mr-3 h-5 w-5 text-primary-500"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -81,30 +81,28 @@ export default function WeatherDisplay({ weather, targetTemperature }: Props) {
 
   return (
     <div className="space-y-4">
-      {/* Current Temperature and Weather */}
-      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 shadow-sm">
+      <div className="bg-gradient-to-br from-primary-50 to-white rounded-xl p-4 shadow-sm border border-primary-100">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <div className="text-5xl font-bold text-gray-800 tracking-tighter">
-              {currentTemp}°<span className="text-xl text-gray-500 ml-1">C</span>
+            <div className="text-5xl font-bold text-gray-900 tracking-tighter">
+              {currentTemp}°<span className="text-xl text-gray-700 ml-1">C</span>
             </div>
-            <div className="ml-3 text-sm text-gray-600">Feels like {feelsLike}°C</div>
+            <div className="ml-3 text-sm text-gray-700">Feels like {feelsLike}°C</div>
           </div>
           <div className="text-right">
             <div className="text-3xl mb-1">{getWeatherIcon(weather.weather[0].main)}</div>
-            <div className="text-sm font-medium text-gray-800">
+            <div className="text-sm font-medium text-gray-600">
               {weather.weather[0].description}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Target Temperature Info */}
-      <div className="bg-white rounded-xl p-3 shadow-sm border border-blue-100">
+      <div className="bg-white rounded-xl p-3 shadow-sm border border-primary-100">
         <div className="flex items-center justify-between">
           <div>
-            <div className="text-sm font-medium text-blue-600">Target: {targetTemperature}°C</div>
-            <div className="text-xs text-blue-500 mt-0.5">
+            <div className="text-sm font-medium text-gray-900">Target: {targetTemperature}°C</div>
+            <div className="text-xs text-gray-600 mt-0.5">
               {Number(tempDiff) > 0
                 ? `${tempDiff}°C below target`
                 : Number(tempDiff) < 0
@@ -118,14 +116,13 @@ export default function WeatherDisplay({ weather, targetTemperature }: Props) {
         </div>
       </div>
 
-      {/* Weather Details */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="bg-white rounded-xl p-3 shadow-sm border border-gray-100">
+        <div className="bg-white rounded-xl p-3 shadow-sm border border-primary-100">
           <div className="flex items-center">
             <span className="text-xl mr-2">💧</span>
             <div>
-              <div className="text-xs font-medium text-gray-500">Humidity</div>
-              <div className="text-sm font-semibold text-gray-800">{weather.main.humidity}%</div>
+              <div className="text-xs font-medium text-gray-600">Humidity</div>
+              <div className="text-sm font-semibold text-gray-900">{weather.main.humidity}%</div>
             </div>
           </div>
         </div>
@@ -142,25 +139,24 @@ export default function WeatherDisplay({ weather, targetTemperature }: Props) {
         </div>
       </div>
 
-      {/* Sunrise/Sunset Times */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="bg-gradient-to-br from-orange-50 to-yellow-50 rounded-xl p-3 shadow-sm">
+        <div className="bg-gradient-to-br from-primary-50 to-white rounded-xl p-3 shadow-sm border border-primary-100">
           <div className="flex items-center">
             <span className="text-xl mr-2">🌅</span>
             <div>
-              <div className="text-xs font-medium text-orange-600">Sunrise</div>
-              <div className="text-sm font-semibold text-gray-800">
+              <div className="text-xs font-medium text-gray-700">Sunrise</div>
+              <div className="text-sm font-semibold text-gray-900">
                 {formatTime(weather.sys.sunrise)}
               </div>
             </div>
           </div>
         </div>
-        <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl p-3 shadow-sm">
+        <div className="bg-gradient-to-br from-primary-50 to-white rounded-xl p-3 shadow-sm border border-primary-100">
           <div className="flex items-center">
             <span className="text-xl mr-2">🌇</span>
             <div>
-              <div className="text-xs font-medium text-purple-600">Sunset</div>
-              <div className="text-sm font-semibold text-gray-800">
+              <div className="text-xs font-medium text-gray-700">Sunset</div>
+              <div className="text-sm font-semibold text-gray-900">
                 {formatTime(weather.sys.sunset)}
               </div>
             </div>

@@ -94,18 +94,18 @@ const GlobalSettings: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
-      <div className="bg-white rounded-lg w-3/4 max-w-4xl h-[calc(100vh-120px)] overflow-hidden shadow-xl">
+    <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-[9999]">
+      <div className="bg-white rounded-lg w-3/4 max-w-4xl h-[calc(100vh-120px)] overflow-hidden shadow-xl border border-gray-200">
         <div className="flex flex-col h-full">
           <div className="flex items-center justify-between p-4 border-b">
             <div className="flex items-center space-x-2">
-              <CogIcon className="h-6 w-6 text-gray-600" />
-              <h2 className="text-xl font-semibold">Global Settings</h2>
+              <CogIcon className="h-6 w-6 text-gray-700" />
+              <h2 className="text-xl font-semibold text-gray-900">Global Settings</h2>
             </div>
             <div className="flex items-center space-x-4">
               <button
                 onClick={handleSave}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors"
               >
                 Save Changes
               </button>
@@ -116,14 +116,14 @@ const GlobalSettings: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
           </div>
 
           <Tab.Group>
-            <Tab.List className="flex space-x-1 p-4 bg-gray-100">
+            <Tab.List className="flex space-x-1 p-4 bg-gray-50">
               {tabs.map((tab) => (
                 <Tab
                   key={tab.name}
                   className={({ selected }) =>
                     `px-4 py-2 rounded-lg text-sm font-medium focus:outline-none ${
                       selected
-                        ? 'bg-white shadow text-blue-600'
+                        ? 'bg-white shadow text-green-600'
                         : 'text-gray-600 hover:bg-white/[0.5] hover:text-gray-700'
                     }`
                   }
@@ -146,9 +146,9 @@ const GlobalSettings: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                         />
                       </svg>
                     </span>
-                    <div className="absolute bottom-full left-1/2  mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+                    <div className="absolute bottom-full left-1/2  mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
                       {tab.tooltip}
-                      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-2 h-2 bg-gray-900 rotate-45"></div>
+                      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-2 h-2 bg-gray-800 rotate-45"></div>
                     </div>
                   </span>
                 </Tab>
@@ -157,14 +157,12 @@ const GlobalSettings: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
 
             <Tab.Panels className="flex-1 overflow-y-auto">
               <div className="p-4">
-                {/* Temperature Presets Panel */}
                 <Tab.Panel>
                   <div className="space-y-6">
-                    {/* Local Weather Sync */}
                     <div className="bg-white p-6 rounded-lg shadow mb-6">
                       <div className="flex items-center justify-between mb-4">
                         <div>
-                          <h3 className="text-lg font-medium">Local Weather Sync</h3>
+                          <h3 className="text-lg font-medium text-gray-900">Local Weather Sync</h3>
                           <p className="text-sm text-gray-600 mt-1">
                             Reset all facilities to match their local weather temperatures
                           </p>
@@ -172,7 +170,7 @@ const GlobalSettings: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                         <button
                           onClick={() => resetToLocal()}
                           disabled={loading}
-                          className="inline-flex items-center px-4 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="inline-flex items-center px-4 py-2 bg-green-50 text-green-600 hover:bg-green-100 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                           title="Reset all facilities to their local weather temperature (defaults to 22°C if weather data unavailable)"
                         >
                           <span className="mr-2">🌡️</span>
@@ -180,7 +178,7 @@ const GlobalSettings: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                           {loading && ' ...'}
                         </button>
                       </div>
-                      <div className="text-sm text-gray-500 bg-gray-50 rounded p-3 flex items-start">
+                      <div className="text-sm text-gray-600 bg-gray-50 rounded p-3 flex items-start">
                         <span className="text-amber-500 mr-2">⚠️</span>
                         <p>
                           If weather data is unavailable for any facility, its temperature will
@@ -189,9 +187,10 @@ const GlobalSettings: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                       </div>
                     </div>
 
-                    {/* Daily Temperature Presets */}
                     <div className="bg-white p-6 rounded-lg shadow">
-                      <h3 className="text-lg font-medium mb-4">Daily Temperature Presets</h3>
+                      <h3 className="text-lg font-medium mb-4 text-gray-900">
+                        Daily Temperature Presets
+                      </h3>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="space-y-2">
                           <label className="block text-sm font-medium text-gray-700">
@@ -254,7 +253,9 @@ const GlobalSettings: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                     </div>
 
                     <div className="bg-white p-6 rounded-lg shadow">
-                      <h3 className="text-lg font-medium mb-4">Temperature Thresholds</h3>
+                      <h3 className="text-lg font-medium mb-4 text-gray-900">
+                        Temperature Thresholds
+                      </h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <label className="block text-sm font-medium text-gray-700">
@@ -299,12 +300,13 @@ const GlobalSettings: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                   </div>
                 </Tab.Panel>
 
-                {/* Seasonal Profiles Panel */}
                 <Tab.Panel>
                   <div className="space-y-6">
                     {Object.entries(localSettings.seasonalProfiles).map(([season, temps]) => (
                       <div key={season} className="bg-white p-6 rounded-lg shadow">
-                        <h3 className="text-lg font-medium mb-4 capitalize">{season} Profile</h3>
+                        <h3 className="text-lg font-medium mb-4 capitalize text-gray-900">
+                          {season} Profile
+                        </h3>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <div className="space-y-2">
                             <label className="block text-sm font-medium text-gray-700">
@@ -369,7 +371,6 @@ const GlobalSettings: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                   </div>
                 </Tab.Panel>
 
-                {/* Energy Saving Panel */}
                 <Tab.Panel>
                   <div className="space-y-6">
                     <div className="bg-white p-6 rounded-lg shadow">
@@ -396,7 +397,7 @@ const GlobalSettings: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
 
                       <div className="space-y-6">
                         <div>
-                          <h4 className="text-md font-medium mb-3">Peak Hours</h4>
+                          <h4 className="text-md font-medium mb-3 text-gray-800">Peak Hours</h4>
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div className="space-y-2">
                               <label className="block text-sm font-medium text-gray-700">
@@ -468,7 +469,7 @@ const GlobalSettings: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                         </div>
 
                         <div>
-                          <h4 className="text-md font-medium mb-3">Off-Peak Hours</h4>
+                          <h4 className="text-md font-medium mb-3 text-gray-800">Off-Peak Hours</h4>
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div className="space-y-2">
                               <label className="block text-sm font-medium text-gray-700">
@@ -543,7 +544,6 @@ const GlobalSettings: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                   </div>
                 </Tab.Panel>
 
-                {/* Alerts Panel */}
                 <Tab.Panel>
                   <div className="space-y-6">
                     <div className="bg-white p-6 rounded-lg shadow">

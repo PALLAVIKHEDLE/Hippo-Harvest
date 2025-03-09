@@ -49,35 +49,3 @@ export interface GeocodingResponse {
   country: string;
   state: string;
 }
-
-// Example response from OpenWeather API:
-/*
-{
-  "coord": {"lon": -122.4194,"lat": 37.7749},
-  "weather": [{"id": 800,"main": "Clear","description": "clear sky","icon": "01d"}],
-  "base": "stations",
-  "main": {
-    "temp": 15.23,
-    "feels_like": 14.81,
-    "temp_min": 12.78,
-    "temp_max": 17.22,
-    "pressure": 1016,
-    "humidity": 77
-  },
-  "visibility": 10000,
-  "wind": {"speed": 4.12,"deg": 270,"gust": 8.23},
-  "clouds": {"all": 0},
-  "dt": 1646521468,
-  "sys": {
-    "type": 2,
-    "id": 2017352,
-    "country": "US",
-    "sunrise": 1646579892,
-    "sunset": 1646621001
-  },
-  "timezone": -28800,  // PST offset (-8 hours in seconds)
-  "id": 5391959,
-  "name": "San Francisco",
-  "cod": 200
-}
-*/

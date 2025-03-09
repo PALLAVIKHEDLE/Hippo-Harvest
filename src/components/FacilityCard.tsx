@@ -17,15 +17,14 @@ export default function FacilityCard({ facility, onTemperatureChange, onDelete }
   };
 
   return (
-    <div className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100">
-      {/* Facility Header */}
-      <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-3">
+    <div className="bg-white rounded-xl overflow-hidden shadow-lg border border-primary-100">
+      <div className="bg-gradient-to-r from-primary-500 to-primary-600 p-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center text-white">
+          <div className="flex items-center">
             <span className="text-lg mr-2">📍</span>
             <div>
-              <h3 className="font-medium">{facility.name}</h3>
-              <p className="text-xs text-blue-100">
+              <h3 className="font-medium text-black">{facility.name}</h3>
+              <p className="text-sm text-gray-600">
                 {facility.location.city}, {facility.location.country}
               </p>
             </div>
@@ -47,12 +46,10 @@ export default function FacilityCard({ facility, onTemperatureChange, onDelete }
         </div>
       </div>
 
-      {/* Weather Display */}
       <div className="p-3">
         <WeatherDisplay weather={facility.weather} targetTemperature={facility.targetTemperature} />
       </div>
 
-      {/* Temperature Controls */}
       <div className="border-t border-gray-100">
         <div className="p-3">
           <TemperatureControl
@@ -62,20 +59,14 @@ export default function FacilityCard({ facility, onTemperatureChange, onDelete }
         </div>
         <button
           onClick={() => {
-            // Reset to weather-based temperature if available, otherwise use comfort temperature (22°C)
-            const comfortTemp = 22; // Default comfort temperature in Celsius
-            let localTemp;
-
-            if (facility.weather?.main.temp) {
-              // Weather API returns temperature in Celsius (units=metric)
-              localTemp = Math.round(facility.weather.main.temp);
-            } else {
-              localTemp = comfortTemp;
-            }
+            const comfortTemp = 22;
+            const localTemp = facility.weather?.main.temp
+              ? Math.round(facility.weather.main.temp)
+              : comfortTemp;
 
             onTemperatureChange(facility.id, localTemp);
           }}
-          className="w-full p-2 text-sm text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 transition-colors border-t border-gray-100 flex items-center justify-center"
+          className="w-full p-2 text-sm text-gray-800 hover:text-gray-900 bg-primary-50 hover:bg-primary-100 transition-colors border-t border-primary-100 flex items-center justify-center font-medium"
           title={`Reset to local weather temperature (defaults to ${22}°C if weather data unavailable)`}
         >
           <span className="mr-2">🌡️</span>
